@@ -1,212 +1,326 @@
-<script>
-const CONFIG = {
-  githubOwner: "boofruit",
-  githubRepository: "Portfolio_ImageScroll",
-  branch: "main",
-  rootFolder: "sets"
-};
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio Carousel</title>
 
-  let projects = [];
-  let activeProject = 0;
-  let activePhoto = 0;
-
-  const slideElement = document.getElementById("slide");
-  const dotsElement = document.getElementById("dots");
-  const carouselElement = document.querySelector(".carousel");
-
-  const projectPicker = document.createElement("select");
-  projectPicker.setAttribute("aria-label", "Choose project");
-  projectPicker.style.cssText = `
-    display: block;
-    width: 100%;
-    max-width: 300px;
-    margin: 0 auto 16px;
-    padding: 10px 12px;
-    border: 1px solid #d0d0d0;
-    border-radius: 8px;
-    background: white;
-    font-size: 16px;
-  `;
-
-  carouselElement.prepend(projectPicker);
-
-  function encodePath(path) {
-    return path
-      .split("/")
-      .map(part => encodeURIComponent(part))
-      .join("/");
-  }
-
-  async function getGitHubContents(path) {
-    const url =
-      `https://api.github.com/repos/` +
-      `${CONFIG.githubOwner}/${CONFIG.githubRepository}/contents/` +
-      `${encodePath(path)}?ref=${encodeURIComponent(CONFIG.branch)}`;
-
-    const response = await fetch(url, {
-      headers: {
-        Accept: "application/vnd.github+json"
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`GitHub request failed: ${response.status}`);
+  <style>
+    * {
+      box-sizing: border-box;
     }
 
-    return response.json();
-  }
+    body {
+      margin: 0;
+      background: #f5f5f2;
+      color: #171717;
+      font-family: Arial, sans-serif;
+    }
 
-  function isImage(filename) {
-    return /\.(jpg|jpeg|png|gif|webp|avif)$/i.test(filename);
-  }
+    .carousel {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px;
+    }
 
-  function sortFiles(a, b) {
-    return a.name.localeCompare(b.name, undefined, {
-      numeric: true,
-      sensitivity: "base"
-    });
-  }
+    .project-picker {
+      display: block;
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto 16px;
+      padding: 10px 12px;
+      border: 1px solid #d0d0d0;
+      border-radius: 8px;
+      background: white;
+      font-size: 16px;
+    }
 
-  function formatProjectName(name) {
-    return name
-      .replace(/[-_]+/g, " ")
-      .replace(/\b\w/g, character => character.toUpperCase());
-  }
+    .slide {
+      min-height: 520px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-radius: 18px;
+      background: white;
+    }
 
-  async function discoverProjects() {
-    const rootItems = await getGitHubContents(CONFIG.rootFolder);
+    .slide img {
+      width: 100%;
+      height: 520px;
+      object-fit: cover;
+    }
 
-    const folders = rootItems
-      .filter(item => item.type === "dir")
-      .sort((a, b) => a.name.localeCompare(b.name));
+    .message {
+      padding: 40px;
+      text-align: center;
+    }
 
-    const discoveredProjects = await Promise.all(
-      folders.map(async folder => {
-        const contents = await getGitHubContents(folder.path);
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 16px;
+    }
 
-        const photos = contents
-          .filter(item => item.type === "file" && isImage(item.name))
-          .sort(sortFiles);
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 16px;
+      background: #171717;
+      color: white;
+      cursor: pointer;
+      font-size: 18px;
+    }
 
-        return {
-          name: folder.name,
-          photos
-        };
-      })
-    );
+    .dots {
+      display: flex;
+      gap: 8px;
+    }
 
-    return discoveredProjects.filter(project => project.photos.length > 0);
-  }
+    .dot {
+      width: 9px;
+      height: 9px;
+      padding: 0;
+      background: #c5c5c5;
+    }
 
-  function renderProjectPicker() {
-    projectPicker.replaceChildren();
+    .dot.active {
+      background: #171717;
+    }
 
-    projects.forEach((project, index) => {
-      const option = document.createElement("option");
-      option.value = index;
-      option.textContent = formatProjectName(project.name);
-      projectPicker.appendChild(option);
-    });
+    @media (max-width: 600px) {
+      .carousel {
+        padding: 12px;
+      }
 
-    projectPicker.value = activeProject;
-  }
+      .slide,
+      .slide img {
+        min-height: 420px;
+        height: 420px;
+      }
+    }
+  </style>
+</head>
 
-  function renderSlide() {
-    const project = projects[activeProject];
-    const photo = project.photos[activePhoto];
+<body>
+  <main class="carousel">
+    <section id="slide" class="slide">
+      <div class="message">Loading projects…</div>
+    </section>
 
-    slideElement.replaceChildren();
+    <div class="controls">
+      <button id="previous" type="button" aria-label="Previous photo">←</button>
 
-    const image = document.createElement("img");
-    image.src = photo.download_url;
-    image.alt = `${formatProjectName(project.name)} image ${activePhoto + 1}`;
+      <div id="dots" class="dots"></div>
 
-    slideElement.appendChild(image);
+      <button id="next" type="button" aria-label="Next photo">→</button>
+    </div>
+  </main>
 
-    dotsElement.replaceChildren();
+  <script>
+    const CONFIG = {
+      githubOwner: "boofruit",
+      githubRepository: "Portfolio_ImageScroll",
+      branch: "main",
+      rootFolder: "sets"
+    };
 
-    project.photos.forEach((_, index) => {
-      const dot = document.createElement("button");
+    let projects = [];
+    let activeProject = 0;
+    let activePhoto = 0;
 
-      dot.className = `dot ${index === activePhoto ? "active" : ""}`;
-      dot.setAttribute("aria-label", `Go to photo ${index + 1}`);
+    const slideElement = document.getElementById("slide");
+    const dotsElement = document.getElementById("dots");
+    const carouselElement = document.querySelector(".carousel");
 
-      dot.addEventListener("click", () => {
-        activePhoto = index;
-        renderSlide();
+    const projectPicker = document.createElement("select");
+    projectPicker.className = "project-picker";
+    projectPicker.setAttribute("aria-label", "Choose project");
+
+    carouselElement.prepend(projectPicker);
+
+    function encodePath(path) {
+      return path
+        .split("/")
+        .map(part => encodeURIComponent(part))
+        .join("/");
+    }
+
+    async function getGitHubContents(path) {
+      const url =
+        `https://api.github.com/repos/` +
+        `${CONFIG.githubOwner}/${CONFIG.githubRepository}/contents/` +
+        `${encodePath(path)}?ref=${encodeURIComponent(CONFIG.branch)}`;
+
+      const response = await fetch(url, {
+        headers: {
+          Accept: "application/vnd.github+json"
+        }
       });
 
-      dotsElement.appendChild(dot);
-    });
-  }
-
-  function showMessage(message) {
-    slideElement.innerHTML = `
-      <div style="
-        padding: 40px;
-        text-align: center;
-        font-family: Arial, sans-serif;
-      ">
-        ${message}
-      </div>
-    `;
-  }
-
-  document.getElementById("previous").addEventListener("click", () => {
-    const project = projects[activeProject];
-
-    activePhoto =
-      (activePhoto - 1 + project.photos.length) %
-      project.photos.length;
-
-    renderSlide();
-  });
-
-  document.getElementById("next").addEventListener("click", () => {
-    const project = projects[activeProject];
-
-    activePhoto =
-      (activePhoto + 1) %
-      project.photos.length;
-
-    renderSlide();
-  });
-
-  projectPicker.addEventListener("change", event => {
-    activeProject = Number(event.target.value);
-    activePhoto = 0;
-    renderSlide();
-  });
-
-  async function startCarousel() {
-    try {
-      showMessage("Loading projects…");
-
-      projects = await discoverProjects();
-
-      if (projects.length === 0) {
-        showMessage("No project folders with images were found.");
-        return;
+      if (!response.ok) {
+        throw new Error(`GitHub request failed: ${response.status}`);
       }
 
-      const requestedProject =
-        new URLSearchParams(window.location.search).get("project");
+      return response.json();
+    }
 
-      const requestedIndex = projects.findIndex(
-        project => project.name === requestedProject
+    function isImage(filename) {
+      return /\.(jpg|jpeg|png|gif|webp|avif)$/i.test(filename);
+    }
+
+    function sortFiles(a, b) {
+      return a.name.localeCompare(b.name, undefined, {
+        numeric: true,
+        sensitivity: "base"
+      });
+    }
+
+    function formatProjectName(name) {
+      return name
+        .replace(/[-_]+/g, " ")
+        .replace(/\b\w/g, character => character.toUpperCase());
+    }
+
+    async function discoverProjects() {
+      const rootItems = await getGitHubContents(CONFIG.rootFolder);
+
+      const folders = rootItems
+        .filter(item => item.type === "dir")
+        .sort((a, b) => a.name.localeCompare(b.name));
+
+      const discoveredProjects = await Promise.all(
+        folders.map(async folder => {
+          const contents = await getGitHubContents(folder.path);
+
+          const photos = contents
+            .filter(item => item.type === "file" && isImage(item.name))
+            .sort(sortFiles);
+
+          return {
+            name: folder.name,
+            photos
+          };
+        })
       );
 
-      if (requestedIndex >= 0) {
-        activeProject = requestedIndex;
-      }
-
-      renderProjectPicker();
-      renderSlide();
-    } catch (error) {
-      console.error(error);
-      showMessage("Unable to load projects from GitHub.");
+      return discoveredProjects.filter(project => project.photos.length > 0);
     }
-  }
 
-  startCarousel();
-</script>
+    function showMessage(message) {
+      const messageElement = document.createElement("div");
+      messageElement.className = "message";
+      messageElement.textContent = message;
+
+      slideElement.replaceChildren(messageElement);
+    }
+
+    function renderProjectPicker() {
+      projectPicker.replaceChildren();
+
+      projects.forEach((project, index) => {
+        const option = document.createElement("option");
+
+        option.value = index;
+        option.textContent = formatProjectName(project.name);
+
+        projectPicker.appendChild(option);
+      });
+
+      projectPicker.value = activeProject;
+    }
+
+    function renderSlide() {
+      const project = projects[activeProject];
+      const photo = project.photos[activePhoto];
+
+      slideElement.replaceChildren();
+
+      const image = document.createElement("img");
+      image.src = photo.download_url;
+      image.alt =
+        `${formatProjectName(project.name)} image ${activePhoto + 1}`;
+
+      slideElement.appendChild(image);
+
+      dotsElement.replaceChildren();
+
+      project.photos.forEach((_, index) => {
+        const dot = document.createElement("button");
+
+        dot.className =
+          index === activePhoto ? "dot active" : "dot";
+
+        dot.type = "button";
+        dot.setAttribute("aria-label", `Go to photo ${index + 1}`);
+
+        dot.addEventListener("click", () => {
+          activePhoto = index;
+          renderSlide();
+        });
+
+        dotsElement.appendChild(dot);
+      });
+    }
+
+    document.getElementById("previous").addEventListener("click", () => {
+      const project = projects[activeProject];
+
+      activePhoto =
+        (activePhoto - 1 + project.photos.length) %
+        project.photos.length;
+
+      renderSlide();
+    });
+
+    document.getElementById("next").addEventListener("click", () => {
+      const project = projects[activeProject];
+
+      activePhoto =
+        (activePhoto + 1) %
+        project.photos.length;
+
+      renderSlide();
+    });
+
+    projectPicker.addEventListener("change", event => {
+      activeProject = Number(event.target.value);
+      activePhoto = 0;
+      renderSlide();
+    });
+
+    async function startCarousel() {
+      try {
+        projects = await discoverProjects();
+
+        if (projects.length === 0) {
+          showMessage("No project folders with images were found.");
+          return;
+        }
+
+        const requestedProject =
+          new URLSearchParams(window.location.search).get("project");
+
+        const requestedIndex = projects.findIndex(
+          project => project.name === requestedProject
+        );
+
+        if (requestedIndex >= 0) {
+          activeProject = requestedIndex;
+        }
+
+        renderProjectPicker();
+        renderSlide();
+      } catch (error) {
+        console.error(error);
+        showMessage(
+          "Unable to load projects from GitHub. Check the repository settings."
+        );
+      }
+    }
+
+    startCarousel();
+  </script>
+</body>
+</html>
