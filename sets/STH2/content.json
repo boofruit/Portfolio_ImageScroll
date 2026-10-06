@@ -1,27 +1,40 @@
 [
   {
-    "image": "Image Sequence_003_0000.jpg",
-    "title": "STH — Overview",
-    "text": "A short description of this part of the project."
+    "image": "Image 01.jpg",
+    "showText": true,
+    "textPosition": "right",
+    "title": "Project introduction",
+    "text": "This text appears to the right of the image."
   },
   {
-    "image": "Image Sequence_004_0000.jpg",
-    "title": "STH — Development",
-    "text": "This slide explains the development process and key design decisions."
+    "image": "Image 02.jpg",
+    "showText": false
   },
   {
-    "image": "Image Sequence_005_0000.jpg",
-    "title": "STH — Final result",
-    "text": "The completed result and final presentation."
-  }
-   {
-    "image": "Image Sequence_004_0000.jpg",
-    "title": "STH — Development",
-    "text": "This slide explains the development process and key design decisions."
+    "image": "Image 03.jpg",
+    "showText": true,
+    "textPosition": "left",
+    "title": "Development process",
+    "text": "This text appears to the left of the image."
   },
   {
-    "image": "Image Sequence_005_0000.jpg",
-    "title": "STH — Final result",
-    "text": "The completed result and final presentation."
+    "image": "Image 04.jpg",
+    "showText": true,
+    "textPosition": "top",
+    "title": "Concept exploration",
+    "text": "This text appears above the image."
+  },
+  {
+    "image": "Image 05.jpg",
+    "showText": true,
+    "textPosition": "bottom",
+    "title": "Final result",
+    "text": "This text appears below the image."
+  },
+  {
+    "showText": true,
+    "textPosition": "right",
+    "title": "Text-only slide",
+    "text": "This slide has no image and displays only text."
   }
 ]
