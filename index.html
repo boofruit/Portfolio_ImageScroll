@@ -35,13 +35,64 @@
       font-size: 16px;
     }
 
-  .slide {
+ .slide {
   min-height: 520px;
   display: grid;
-  grid-template-columns: minmax(0, 3fr) minmax(260px, 2fr);
   overflow: hidden;
   border-radius: 18px;
   background: white;
+}
+
+.slide.text-right,
+.slide.text-left {
+  grid-template-columns: minmax(0, 3fr) minmax(260px, 2fr);
+}
+
+.slide.text-right .slide-media {
+  order: 1;
+}
+
+.slide.text-right .slide-copy {
+  order: 2;
+}
+
+.slide.text-left .slide-media {
+  order: 2;
+}
+
+.slide.text-left .slide-copy {
+  order: 1;
+}
+
+.slide.text-top,
+.slide.text-bottom {
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto;
+}
+
+.slide.text-top .slide-copy {
+  order: 1;
+}
+
+.slide.text-top .slide-media {
+  order: 2;
+}
+
+.slide.text-bottom .slide-media {
+  order: 1;
+}
+
+.slide.text-bottom .slide-copy {
+  order: 2;
+}
+
+.slide.image-only {
+  display: block;
+}
+
+.slide.text-only {
+  display: flex;
+  align-items: center;
 }
 
 .slide-media {
@@ -49,10 +100,10 @@
 }
 
 .slide-media img {
+  display: block;
   width: 100%;
   height: 100%;
   min-height: 520px;
-  display: block;
   object-fit: cover;
 }
 
@@ -75,20 +126,21 @@
   line-height: 1.6;
 }
 
-.slide-copy a {
-  display: inline-block;
-  width: fit-content;
-  margin-top: 24px;
-  padding: 11px 16px;
-  border-radius: 999px;
-  background: #171717;
-  color: white;
-  text-decoration: none;
-}
-
 @media (max-width: 650px) {
-  .slide {
+  .slide.text-right,
+  .slide.text-left {
     grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+  }
+
+  .slide.text-right .slide-media,
+  .slide.text-left .slide-media {
+    order: 1;
+  }
+
+  .slide.text-right .slide-copy,
+  .slide.text-left .slide-copy {
+    order: 2;
   }
 
   .slide-media,
@@ -101,56 +153,6 @@
     padding: 30px;
   }
 }
-
-    .message {
-      padding: 40px;
-      text-align: center;
-    }
-
-    .controls {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 16px;
-    }
-
-    button {
-      border: 0;
-      border-radius: 999px;
-      padding: 10px 16px;
-      background: #171717;
-      color: white;
-      cursor: pointer;
-      font-size: 18px;
-    }
-
-    .dots {
-      display: flex;
-      gap: 8px;
-    }
-
-    .dot {
-      width: 9px;
-      height: 9px;
-      padding: 0;
-      background: #c5c5c5;
-    }
-
-    .dot.active {
-      background: #171717;
-    }
-
-    @media (max-width: 600px) {
-      .carousel {
-        padding: 12px;
-      }
-
-      .slide,
-      .slide img {
-        min-height: 420px;
-        height: 420px;
-      }
-    }
   </style>
 </head>
 
@@ -234,16 +236,100 @@
       .replace(/\b\w/g, character => character.toUpperCase());
   }
 
-  async function loadSlides(folder, contents) {
-    const images = contents
-      .filter(item => item.type === "file" && isImage(item.name))
-      .sort(sortFiles);
+function normalizeTextPosition(position) {
+  const validPositions = ["left", "right", "top", "bottom"];
 
-    const contentFile = contents.find(
-      item =>
-        item.type === "file" &&
-        item.name.toLowerCase() === "content.json"
-    );
+  return validPositions.includes(position)
+    ? position
+    : "right";
+}
+
+async function loadSlides(folder, contents) {
+  const images = contents
+    .filter(item => item.type === "file" && isImage(item.name))
+    .sort(sortFiles);
+
+  const contentFile = contents.find(
+    item =>
+      item.type === "file" &&
+      item.name.toLowerCase() === "content.json"
+  );
+
+  if (!contentFile) {
+    return images.map((image, index) => ({
+      image: image.download_url,
+      alt: `${formatProjectName(folder.name)} image ${index + 1}`,
+      title: "",
+      text: "",
+      showText: false,
+      textPosition: "right"
+    }));
+  }
+
+  try {
+    const response = await fetch(contentFile.download_url);
+
+    if (!response.ok) {
+      throw new Error("Could not load content.json");
+    }
+
+    const content = await response.json();
+    const entries = Array.isArray(content) ? content : content.slides;
+
+    return entries
+      .map((entry, index) => {
+        const matchingImage = entry.image
+          ? images.find(image => image.name === entry.image)
+          : null;
+
+        const hasText =
+          Boolean(entry.title) ||
+          Boolean(entry.text) ||
+          Boolean(entry.linkUrl);
+
+        const showText =
+          entry.showText !== false && hasText;
+
+        const hasImage = Boolean(matchingImage);
+
+        if (!hasImage && !showText) {
+          return null;
+        }
+
+        return {
+          image: matchingImage
+            ? matchingImage.download_url
+            : null,
+
+          alt:
+            entry.alt ||
+            `${formatProjectName(folder.name)} slide ${index + 1}`,
+
+          title: entry.title || "",
+          text: entry.text || "",
+          showText,
+          textPosition: showText
+            ? normalizeTextPosition(entry.textPosition)
+            : "right",
+
+          linkText: entry.linkText || "",
+          linkUrl: entry.linkUrl || ""
+        };
+      })
+      .filter(Boolean);
+  } catch (error) {
+    console.warn(error);
+
+    return images.map((image, index) => ({
+      image: image.download_url,
+      alt: `${formatProjectName(folder.name)} image ${index + 1}`,
+      title: "",
+      text: "",
+      showText: false,
+      textPosition: "right"
+    }));
+  }
+}
 
     if (!contentFile) {
       return images.map((image, index) => ({
@@ -348,12 +434,30 @@
     projectPicker.value = activeProject;
   }
 
-  function renderSlide() {
-    const project = projects[activeProject];
-    const slide = project.slides[activePhoto];
+function renderSlide() {
+  const project = projects[activeProject];
+  const slide = project.slides[activePhoto];
 
-    slideElement.replaceChildren();
+  const hasImage = Boolean(slide.image);
+  const showText = slide.showText && (
+    slide.title ||
+    slide.text ||
+    slide.linkUrl
+  );
 
+  slideElement.className = "slide";
+
+  if (!hasImage && showText) {
+    slideElement.classList.add("text-only");
+  } else if (hasImage && !showText) {
+    slideElement.classList.add("image-only");
+  } else if (showText) {
+    slideElement.classList.add(`text-${slide.textPosition}`);
+  }
+
+  slideElement.replaceChildren();
+
+  if (hasImage) {
     const media = document.createElement("div");
     media.className = "slide-media";
 
@@ -362,7 +466,10 @@
     image.alt = slide.alt;
 
     media.appendChild(image);
+    slideElement.appendChild(media);
+  }
 
+  if (showText) {
     const copy = document.createElement("div");
     copy.className = "slide-copy";
 
@@ -380,35 +487,37 @@
 
     if (slide.linkUrl) {
       const link = document.createElement("a");
+
       link.href = slide.linkUrl;
       link.textContent = slide.linkText || "View project";
       link.target = "_blank";
       link.rel = "noopener noreferrer";
+
       copy.appendChild(link);
     }
 
-    slideElement.appendChild(media);
     slideElement.appendChild(copy);
-
-    dotsElement.replaceChildren();
-
-    project.slides.forEach((_, index) => {
-      const dot = document.createElement("button");
-
-      dot.className =
-        index === activePhoto ? "dot active" : "dot";
-
-      dot.type = "button";
-      dot.setAttribute("aria-label", `Go to slide ${index + 1}`);
-
-      dot.addEventListener("click", () => {
-        activePhoto = index;
-        renderSlide();
-      });
-
-      dotsElement.appendChild(dot);
-    });
   }
+
+  dotsElement.replaceChildren();
+
+  project.slides.forEach((_, index) => {
+    const dot = document.createElement("button");
+
+    dot.className =
+      index === activePhoto ? "dot active" : "dot";
+
+    dot.type = "button";
+    dot.setAttribute("aria-label", `Go to slide ${index + 1}`);
+
+    dot.addEventListener("click", () => {
+      activePhoto = index;
+      renderSlide();
+    });
+
+    dotsElement.appendChild(dot);
+  });
+}
 
   document.getElementById("previous").addEventListener("click", () => {
     const project = projects[activeProject];
