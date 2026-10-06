@@ -1,21 +1,20 @@
 [
   {
-    "image": "Image 01.jpg",
+    "image": "Image Sequence_003_0000.jpg",
     "showText": true,
     "textPosition": "right",
     "title": "Project introduction",
     "text": "This text appears to the right of the image."
   },
   {
-    "image": "Image 02.jpg",
+    "image": "Image Sequence_004_0000.jpg",
     "showText": false
   },
   {
-    "image": "Image 03.jpg",
+    "image": "Image Sequence_005_0000.jpg",
     "showText": true,
     "textPosition": "left",
     "title": "Development process",
     "text": "This text appears to the left of the image."
-  },
-
+  }
 ]
