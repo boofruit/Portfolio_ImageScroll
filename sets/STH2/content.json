@@ -4,7 +4,7 @@
     "showText": true,
     "textPosition": "right",
     "title": "Project introduction",
-    "text": "This text appears to the right of the image."
+    "text": "This text appears to the right of the image.",
      "zoom": 1.35
   },
   {
@@ -16,7 +16,7 @@
     "showText": true,
     "textPosition": "left",
     "title": "Development process",
-    "text": "This text appears to the left of the image."
+    "text": "This text appears to the left of the image.",
      "zoom": 0.5
   },
   {
