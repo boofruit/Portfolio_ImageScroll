@@ -97,6 +97,7 @@
 
 .slide-media {
   min-height: 520px;
+   overflow: hidden;
 }
 
 .slide-media img {
@@ -193,6 +194,47 @@
 .dot.active {
   background: #171717;
 }
+    .project-menu {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  z-index: 20;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.project-menu-toggle {
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: #171717;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.project-menu-panel {
+  display: none;
+  margin-bottom: 8px;
+  padding: 8px;
+  border-radius: 10px;
+  background: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.project-menu.open .project-menu-panel {
+  display: block;
+}
+
+.project-picker {
+  min-width: 220px;
+  padding: 8px 10px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  background: white;
+  font-size: 14px;
+}
   </style>
 </head>
 
@@ -225,14 +267,35 @@
 
   const slideElement = document.getElementById("slide");
   const dotsElement = document.getElementById("dots");
-  const carouselElement = document.querySelector(".carousel");
+const projectPicker = document.createElement("select");
+projectPicker.className = "project-picker";
+projectPicker.setAttribute("aria-label", "Choose project");
 
-  const projectPicker = document.createElement("select");
-  projectPicker.className = "project-picker";
-  projectPicker.setAttribute("aria-label", "Choose project");
+const projectMenu = document.createElement("div");
+projectMenu.className = "project-menu";
 
-  carouselElement.prepend(projectPicker);
+const projectToggle = document.createElement("button");
+projectToggle.className = "project-menu-toggle";
+projectToggle.type = "button";
+projectToggle.textContent = "Projects";
+projectToggle.setAttribute("aria-expanded", "false");
 
+const projectPanel = document.createElement("div");
+projectPanel.className = "project-menu-panel";
+projectPanel.appendChild(projectPicker);
+
+projectMenu.appendChild(projectToggle);
+projectMenu.appendChild(projectPanel);
+document.body.appendChild(projectMenu);
+
+projectToggle.addEventListener("click", () => {
+  const isOpen = projectMenu.classList.toggle("open");
+
+  projectToggle.setAttribute(
+    "aria-expanded",
+    String(isOpen)
+  );
+});
   function encodePath(path) {
     return path
       .split("/")
@@ -283,7 +346,17 @@ function normalizeTextPosition(position) {
     ? position
     : "right";
 }
+function readZoom(value) {
+  if (value === undefined || value === null || value === "") {
+    return null;
+  }
 
+  const zoom = Number(value);
+
+  return Number.isFinite(zoom) && zoom > 0
+    ? zoom
+    : null;
+}
 async function loadSlides(folder, contents) {
   const images = contents
     .filter(item => item.type === "file" && isImage(item.name))
@@ -302,8 +375,10 @@ async function loadSlides(folder, contents) {
       title: "",
       text: "",
       showText: false,
-      textPosition: "right"
+      textPosition: "right",
+       zoom: null
     }));
+    
   }
 
   try {
@@ -351,7 +426,7 @@ async function loadSlides(folder, contents) {
           textPosition: showText
             ? normalizeTextPosition(entry.textPosition)
             : "right",
-
+          zoom: readZoom(entry.zoom),
           linkText: entry.linkText || "",
           linkUrl: entry.linkUrl || ""
         };
@@ -366,7 +441,8 @@ async function loadSlides(folder, contents) {
       title: "",
       text: "",
       showText: false,
-      textPosition: "right"
+      textPosition: "right",
+       zoom: null
     }));
   }
 }
@@ -447,10 +523,15 @@ function renderSlide() {
     const media = document.createElement("div");
     media.className = "slide-media";
 
-    const image = document.createElement("img");
-    image.src = slide.image;
-    image.alt = slide.alt;
+   const image = document.createElement("img");
 
+image.src = slide.image;
+image.alt = slide.alt;
+
+if (Number.isFinite(slide.zoom) && slide.zoom > 0) {
+  image.style.transform = `scale(${slide.zoom})`;
+  image.style.transformOrigin = "center center";
+}
     media.appendChild(image);
     slideElement.appendChild(media);
   }
@@ -525,11 +606,15 @@ function renderSlide() {
     renderSlide();
   });
 
-  projectPicker.addEventListener("change", event => {
-    activeProject = Number(event.target.value);
-    activePhoto = 0;
-    renderSlide();
-  });
+ projectPicker.addEventListener("change", event => {
+  activeProject = Number(event.target.value);
+  activePhoto = 0;
+
+  projectMenu.classList.remove("open");
+  projectToggle.setAttribute("aria-expanded", "false");
+
+  renderSlide();
+});
 
   async function startCarousel() {
     try {
