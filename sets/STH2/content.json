@@ -5,6 +5,7 @@
     "textPosition": "right",
     "title": "Project introduction",
     "text": "This text appears to the right of the image."
+     "zoom": 1.35
   },
   {
     "image": "Image Sequence_007_0000.jpg",
@@ -16,6 +17,7 @@
     "textPosition": "left",
     "title": "Development process",
     "text": "This text appears to the left of the image."
+     "zoom": 0.5
   },
   {
     "image": "Image Sequence_009_0000.jpg",
