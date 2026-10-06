@@ -1,31 +1,31 @@
 [
   {
-    "image": "Image 01.jpg",
+    "image": "Image Sequence_006_0000.jpg",
     "showText": true,
     "textPosition": "right",
     "title": "Project introduction",
     "text": "This text appears to the right of the image."
   },
   {
-    "image": "Image 02.jpg",
+    "image": "Image Sequence_007_0000.jpg",
     "showText": false
   },
   {
-    "image": "Image 03.jpg",
+    "image": "Image Sequence_008_0000.jpg",
     "showText": true,
     "textPosition": "left",
     "title": "Development process",
     "text": "This text appears to the left of the image."
   },
   {
-    "image": "Image 04.jpg",
+    "image": "Image Sequence_009_0000.jpg",
     "showText": true,
     "textPosition": "top",
     "title": "Concept exploration",
     "text": "This text appears above the image."
   },
   {
-    "image": "Image 05.jpg",
+    "image": "Image Sequence_010_0000.jpg",
     "showText": true,
     "textPosition": "bottom",
     "title": "Final result",
