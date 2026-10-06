@@ -153,6 +153,46 @@
     padding: 30px;
   }
 }
+    .controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 16px;
+}
+
+.controls > button {
+  min-width: 48px;
+  min-height: 48px;
+  border: 0;
+  border-radius: 999px;
+  background: #171717;
+  color: white;
+  cursor: pointer;
+  font-size: 22px;
+}
+
+.dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  min-width: 9px;
+  min-height: 9px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: #c5c5c5;
+}
+
+.dot.active {
+  background: #171717;
+}
   </style>
 </head>
 
@@ -331,61 +371,7 @@ async function loadSlides(folder, contents) {
   }
 }
 
-    if (!contentFile) {
-      return images.map((image, index) => ({
-        image: image.download_url,
-        alt: `${formatProjectName(folder.name)} image ${index + 1}`,
-        title: formatProjectName(folder.name),
-        text: ""
-      }));
-    }
-
-    try {
-      const response = await fetch(contentFile.download_url);
-
-      if (!response.ok) {
-        throw new Error("Could not load content.json");
-      }
-
-      const content = await response.json();
-      const entries = Array.isArray(content) ? content : content.slides;
-
-      return entries
-        .map((entry, index) => {
-          const matchingImage = images.find(
-            image => image.name === entry.image
-          );
-
-          if (!matchingImage) {
-            console.warn(
-              `Image not found for content entry: ${entry.image}`
-            );
-            return null;
-          }
-
-          return {
-            image: matchingImage.download_url,
-            alt:
-              entry.alt ||
-              `${formatProjectName(folder.name)} image ${index + 1}`,
-            title: entry.title || "",
-            text: entry.text || "",
-            linkText: entry.linkText || "",
-            linkUrl: entry.linkUrl || ""
-          };
-        })
-        .filter(Boolean);
-    } catch (error) {
-      console.warn(error);
-
-      return images.map((image, index) => ({
-        image: image.download_url,
-        alt: `${formatProjectName(folder.name)} image ${index + 1}`,
-        title: formatProjectName(folder.name),
-        text: ""
-      }));
-    }
-  }
+   
 
   async function discoverProjects() {
     const rootItems = await getGitHubContents(CONFIG.rootFolder);
