@@ -17,10 +17,5 @@
     "title": "Development process",
     "text": "This text appears to the left of the image."
   },
-  {
-    "showText": true,
-    "textPosition": "right",
-    "title": "Text-only slide",
-    "text": "This slide has no image and displays only text."
-  }
+
 ]
