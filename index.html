@@ -35,21 +35,72 @@
       font-size: 16px;
     }
 
-    .slide {
-      min-height: 520px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      border-radius: 18px;
-      background: white;
-    }
+  .slide {
+  min-height: 520px;
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(260px, 2fr);
+  overflow: hidden;
+  border-radius: 18px;
+  background: white;
+}
 
-    .slide img {
-      width: 100%;
-      height: 520px;
-      object-fit: cover;
-    }
+.slide-media {
+  min-height: 520px;
+}
+
+.slide-media img {
+  width: 100%;
+  height: 100%;
+  min-height: 520px;
+  display: block;
+  object-fit: cover;
+}
+
+.slide-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 42px;
+}
+
+.slide-copy h1 {
+  margin: 0 0 18px;
+  font-size: clamp(28px, 4vw, 52px);
+  line-height: 1.05;
+}
+
+.slide-copy p {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.slide-copy a {
+  display: inline-block;
+  width: fit-content;
+  margin-top: 24px;
+  padding: 11px 16px;
+  border-radius: 999px;
+  background: #171717;
+  color: white;
+  text-decoration: none;
+}
+
+@media (max-width: 650px) {
+  .slide {
+    grid-template-columns: 1fr;
+  }
+
+  .slide-media,
+  .slide-media img {
+    min-height: 300px;
+    height: 300px;
+  }
+
+  .slide-copy {
+    padding: 30px;
+  }
+}
 
     .message {
       padding: 40px;
@@ -118,209 +169,302 @@
     </div>
   </main>
 
-  <script>
-    const CONFIG = {
-      githubOwner: "boofruit",
-      githubRepository: "Portfolio_ImageScroll",
-      branch: "main",
-      rootFolder: "sets"
-    };
+<script>
+  const CONFIG = {
+    githubOwner: "boofruit",
+    githubRepository: "Portfolio_ImageScroll",
+    branch: "main",
+    rootFolder: "sets"
+  };
 
-    let projects = [];
-    let activeProject = 0;
-    let activePhoto = 0;
+  let projects = [];
+  let activeProject = 0;
+  let activePhoto = 0;
 
-    const slideElement = document.getElementById("slide");
-    const dotsElement = document.getElementById("dots");
-    const carouselElement = document.querySelector(".carousel");
+  const slideElement = document.getElementById("slide");
+  const dotsElement = document.getElementById("dots");
+  const carouselElement = document.querySelector(".carousel");
 
-    const projectPicker = document.createElement("select");
-    projectPicker.className = "project-picker";
-    projectPicker.setAttribute("aria-label", "Choose project");
+  const projectPicker = document.createElement("select");
+  projectPicker.className = "project-picker";
+  projectPicker.setAttribute("aria-label", "Choose project");
 
-    carouselElement.prepend(projectPicker);
+  carouselElement.prepend(projectPicker);
 
-    function encodePath(path) {
-      return path
-        .split("/")
-        .map(part => encodeURIComponent(part))
-        .join("/");
+  function encodePath(path) {
+    return path
+      .split("/")
+      .map(part => encodeURIComponent(part))
+      .join("/");
+  }
+
+  async function getGitHubContents(path) {
+    const url =
+      `https://api.github.com/repos/` +
+      `${CONFIG.githubOwner}/${CONFIG.githubRepository}/contents/` +
+      `${encodePath(path)}?ref=${encodeURIComponent(CONFIG.branch)}`;
+
+    const response = await fetch(url, {
+      headers: {
+        Accept: "application/vnd.github+json"
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`GitHub request failed: ${response.status}`);
     }
 
-    async function getGitHubContents(path) {
-      const url =
-        `https://api.github.com/repos/` +
-        `${CONFIG.githubOwner}/${CONFIG.githubRepository}/contents/` +
-        `${encodePath(path)}?ref=${encodeURIComponent(CONFIG.branch)}`;
+    return response.json();
+  }
 
-      const response = await fetch(url, {
-        headers: {
-          Accept: "application/vnd.github+json"
-        }
-      });
+  function isImage(filename) {
+    return /\.(jpg|jpeg|png|gif|webp|avif)$/i.test(filename);
+  }
+
+  function sortFiles(a, b) {
+    return a.name.localeCompare(b.name, undefined, {
+      numeric: true,
+      sensitivity: "base"
+    });
+  }
+
+  function formatProjectName(name) {
+    return name
+      .replace(/[-_]+/g, " ")
+      .replace(/\b\w/g, character => character.toUpperCase());
+  }
+
+  async function loadSlides(folder, contents) {
+    const images = contents
+      .filter(item => item.type === "file" && isImage(item.name))
+      .sort(sortFiles);
+
+    const contentFile = contents.find(
+      item =>
+        item.type === "file" &&
+        item.name.toLowerCase() === "content.json"
+    );
+
+    if (!contentFile) {
+      return images.map((image, index) => ({
+        image: image.download_url,
+        alt: `${formatProjectName(folder.name)} image ${index + 1}`,
+        title: formatProjectName(folder.name),
+        text: ""
+      }));
+    }
+
+    try {
+      const response = await fetch(contentFile.download_url);
 
       if (!response.ok) {
-        throw new Error(`GitHub request failed: ${response.status}`);
+        throw new Error("Could not load content.json");
       }
 
-      return response.json();
-    }
+      const content = await response.json();
+      const entries = Array.isArray(content) ? content : content.slides;
 
-    function isImage(filename) {
-      return /\.(jpg|jpeg|png|gif|webp|avif)$/i.test(filename);
-    }
+      return entries
+        .map((entry, index) => {
+          const matchingImage = images.find(
+            image => image.name === entry.image
+          );
 
-    function sortFiles(a, b) {
-      return a.name.localeCompare(b.name, undefined, {
-        numeric: true,
-        sensitivity: "base"
-      });
-    }
-
-    function formatProjectName(name) {
-      return name
-        .replace(/[-_]+/g, " ")
-        .replace(/\b\w/g, character => character.toUpperCase());
-    }
-
-    async function discoverProjects() {
-      const rootItems = await getGitHubContents(CONFIG.rootFolder);
-
-      const folders = rootItems
-        .filter(item => item.type === "dir")
-        .sort((a, b) => a.name.localeCompare(b.name));
-
-      const discoveredProjects = await Promise.all(
-        folders.map(async folder => {
-          const contents = await getGitHubContents(folder.path);
-
-          const photos = contents
-            .filter(item => item.type === "file" && isImage(item.name))
-            .sort(sortFiles);
+          if (!matchingImage) {
+            console.warn(
+              `Image not found for content entry: ${entry.image}`
+            );
+            return null;
+          }
 
           return {
-            name: folder.name,
-            photos
+            image: matchingImage.download_url,
+            alt:
+              entry.alt ||
+              `${formatProjectName(folder.name)} image ${index + 1}`,
+            title: entry.title || "",
+            text: entry.text || "",
+            linkText: entry.linkText || "",
+            linkUrl: entry.linkUrl || ""
           };
         })
+        .filter(Boolean);
+    } catch (error) {
+      console.warn(error);
+
+      return images.map((image, index) => ({
+        image: image.download_url,
+        alt: `${formatProjectName(folder.name)} image ${index + 1}`,
+        title: formatProjectName(folder.name),
+        text: ""
+      }));
+    }
+  }
+
+  async function discoverProjects() {
+    const rootItems = await getGitHubContents(CONFIG.rootFolder);
+
+    const folders = rootItems
+      .filter(item => item.type === "dir")
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    const discoveredProjects = await Promise.all(
+      folders.map(async folder => {
+        const contents = await getGitHubContents(folder.path);
+        const slides = await loadSlides(folder, contents);
+
+        return {
+          name: folder.name,
+          slides
+        };
+      })
+    );
+
+    return discoveredProjects.filter(
+      project => project.slides.length > 0
+    );
+  }
+
+  function showMessage(message) {
+    const messageElement = document.createElement("div");
+    messageElement.className = "message";
+    messageElement.textContent = message;
+
+    slideElement.replaceChildren(messageElement);
+  }
+
+  function renderProjectPicker() {
+    projectPicker.replaceChildren();
+
+    projects.forEach((project, index) => {
+      const option = document.createElement("option");
+
+      option.value = index;
+      option.textContent = formatProjectName(project.name);
+
+      projectPicker.appendChild(option);
+    });
+
+    projectPicker.value = activeProject;
+  }
+
+  function renderSlide() {
+    const project = projects[activeProject];
+    const slide = project.slides[activePhoto];
+
+    slideElement.replaceChildren();
+
+    const media = document.createElement("div");
+    media.className = "slide-media";
+
+    const image = document.createElement("img");
+    image.src = slide.image;
+    image.alt = slide.alt;
+
+    media.appendChild(image);
+
+    const copy = document.createElement("div");
+    copy.className = "slide-copy";
+
+    if (slide.title) {
+      const title = document.createElement("h1");
+      title.textContent = slide.title;
+      copy.appendChild(title);
+    }
+
+    if (slide.text) {
+      const text = document.createElement("p");
+      text.textContent = slide.text;
+      copy.appendChild(text);
+    }
+
+    if (slide.linkUrl) {
+      const link = document.createElement("a");
+      link.href = slide.linkUrl;
+      link.textContent = slide.linkText || "View project";
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      copy.appendChild(link);
+    }
+
+    slideElement.appendChild(media);
+    slideElement.appendChild(copy);
+
+    dotsElement.replaceChildren();
+
+    project.slides.forEach((_, index) => {
+      const dot = document.createElement("button");
+
+      dot.className =
+        index === activePhoto ? "dot active" : "dot";
+
+      dot.type = "button";
+      dot.setAttribute("aria-label", `Go to slide ${index + 1}`);
+
+      dot.addEventListener("click", () => {
+        activePhoto = index;
+        renderSlide();
+      });
+
+      dotsElement.appendChild(dot);
+    });
+  }
+
+  document.getElementById("previous").addEventListener("click", () => {
+    const project = projects[activeProject];
+
+    activePhoto =
+      (activePhoto - 1 + project.slides.length) %
+      project.slides.length;
+
+    renderSlide();
+  });
+
+  document.getElementById("next").addEventListener("click", () => {
+    const project = projects[activeProject];
+
+    activePhoto =
+      (activePhoto + 1) %
+      project.slides.length;
+
+    renderSlide();
+  });
+
+  projectPicker.addEventListener("change", event => {
+    activeProject = Number(event.target.value);
+    activePhoto = 0;
+    renderSlide();
+  });
+
+  async function startCarousel() {
+    try {
+      projects = await discoverProjects();
+
+      if (projects.length === 0) {
+        showMessage("No project folders with images were found.");
+        return;
+      }
+
+      const requestedProject =
+        new URLSearchParams(window.location.search).get("project");
+
+      const requestedIndex = projects.findIndex(
+        project => project.name === requestedProject
       );
 
-      return discoveredProjects.filter(project => project.photos.length > 0);
-    }
-
-    function showMessage(message) {
-      const messageElement = document.createElement("div");
-      messageElement.className = "message";
-      messageElement.textContent = message;
-
-      slideElement.replaceChildren(messageElement);
-    }
-
-    function renderProjectPicker() {
-      projectPicker.replaceChildren();
-
-      projects.forEach((project, index) => {
-        const option = document.createElement("option");
-
-        option.value = index;
-        option.textContent = formatProjectName(project.name);
-
-        projectPicker.appendChild(option);
-      });
-
-      projectPicker.value = activeProject;
-    }
-
-    function renderSlide() {
-      const project = projects[activeProject];
-      const photo = project.photos[activePhoto];
-
-      slideElement.replaceChildren();
-
-      const image = document.createElement("img");
-      image.src = photo.download_url;
-      image.alt =
-        `${formatProjectName(project.name)} image ${activePhoto + 1}`;
-
-      slideElement.appendChild(image);
-
-      dotsElement.replaceChildren();
-
-      project.photos.forEach((_, index) => {
-        const dot = document.createElement("button");
-
-        dot.className =
-          index === activePhoto ? "dot active" : "dot";
-
-        dot.type = "button";
-        dot.setAttribute("aria-label", `Go to photo ${index + 1}`);
-
-        dot.addEventListener("click", () => {
-          activePhoto = index;
-          renderSlide();
-        });
-
-        dotsElement.appendChild(dot);
-      });
-    }
-
-    document.getElementById("previous").addEventListener("click", () => {
-      const project = projects[activeProject];
-
-      activePhoto =
-        (activePhoto - 1 + project.photos.length) %
-        project.photos.length;
-
-      renderSlide();
-    });
-
-    document.getElementById("next").addEventListener("click", () => {
-      const project = projects[activeProject];
-
-      activePhoto =
-        (activePhoto + 1) %
-        project.photos.length;
-
-      renderSlide();
-    });
-
-    projectPicker.addEventListener("change", event => {
-      activeProject = Number(event.target.value);
-      activePhoto = 0;
-      renderSlide();
-    });
-
-    async function startCarousel() {
-      try {
-        projects = await discoverProjects();
-
-        if (projects.length === 0) {
-          showMessage("No project folders with images were found.");
-          return;
-        }
-
-        const requestedProject =
-          new URLSearchParams(window.location.search).get("project");
-
-        const requestedIndex = projects.findIndex(
-          project => project.name === requestedProject
-        );
-
-        if (requestedIndex >= 0) {
-          activeProject = requestedIndex;
-        }
-
-        renderProjectPicker();
-        renderSlide();
-      } catch (error) {
-        console.error(error);
-        showMessage(
-          "Unable to load projects from GitHub. Check the repository settings."
-        );
+      if (requestedIndex >= 0) {
+        activeProject = requestedIndex;
       }
-    }
 
-    startCarousel();
-  </script>
+      renderProjectPicker();
+      renderSlide();
+    } catch (error) {
+      console.error(error);
+      showMessage("Unable to load projects from GitHub.");
+    }
+  }
+
+  startCarousel();
+</script>
 </body>
 </html>
