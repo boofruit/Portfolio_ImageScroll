@@ -43,9 +43,12 @@
   background: white;
 }
 
-.slide.text-right,
+.slide.text-right {
+  grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr);
+}
+
 .slide.text-left {
-  grid-template-columns: minmax(0, 3fr) minmax(260px, 2fr);
+  grid-template-columns: minmax(220px, 1fr) minmax(0, 2fr);
 }
 
 .slide.text-right .slide-media {
