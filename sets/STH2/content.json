@@ -8,7 +8,16 @@
   },
   {
     "image": "Image Sequence_012_0000.jpg",
-    "showText": false
+    "showText": true,
+    "textPosition": "bottom",
+    "title": "Project introduction",
+    "text": "This text appears to the right of the image."
+  },{
+    "image": "bungiejump.png",
+    "showText": true,
+    "textPosition": "bottom",
+    "title": "Project introduction",
+    "text": "This text appears to the right of the image."
   },
   {
     "image": "Image Sequence_013_0000.jpg",
@@ -24,15 +33,5 @@
     "textPosition": "bottom",
     "title": "Concept exploration",
     "text": "This text appears above the image."
-  },
-  {
-    "image": "bungiejump.png",
-    "showText": false
-  },
-  {
-    "showText": true,
-    "textPosition": "bottom",
-    "title": "Text-only slide",
-    "text": "This slide has no image and displays only text."
   }
 ]
