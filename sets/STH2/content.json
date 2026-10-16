@@ -26,6 +26,10 @@
     "text": "This text appears above the image."
   },
   {
+    "image": "bungiejump.png",
+    "showText": false
+  },
+  {
     "showText": true,
     "textPosition": "right",
     "title": "Text-only slide",
