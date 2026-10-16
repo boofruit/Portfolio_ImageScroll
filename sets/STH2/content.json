@@ -12,7 +12,8 @@
     "textPosition": "bottom",
     "title": "Project introduction",
     "text": "This text appears to the right of the image."
-  },{
+  },
+  {
     "image": "bungiejump.png",
     "showText": true,
     "textPosition": "bottom",
