@@ -2,7 +2,7 @@
   {
     "image": "Image Sequence_011_0000.jpg",
     "showText": true,
-    "textPosition": "right",
+    "textPosition": "bottom",
     "title": "Project introduction",
     "text": "This text appears to the right of the image."
   },
@@ -13,15 +13,15 @@
   {
     "image": "Image Sequence_013_0000.jpg",
     "showText": true,
-    "textPosition": "left",
+    "textPosition": "bottom",
     "title": "Development process",
     "text": "This text appears to the left of the image.",
-     "zoom": 2
+     "zoom": 1.5
   },
   {
     "image": "Image Sequence_018_0000.jpg",
     "showText": true,
-    "textPosition": "top",
+    "textPosition": "bottom",
     "title": "Concept exploration",
     "text": "This text appears above the image."
   },
@@ -31,7 +31,7 @@
   },
   {
     "showText": true,
-    "textPosition": "right",
+    "textPosition": "bottom",
     "title": "Text-only slide",
     "text": "This slide has no image and displays only text."
   }
