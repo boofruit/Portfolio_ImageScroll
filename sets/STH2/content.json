@@ -3,43 +3,43 @@
     "image": "Image Sequence_011_0000.jpg",
     "showText": true,
     "textPosition": "bottom",
-    "title": "Project introduction",
-    "text": "This text appears to the right of the image."
+    "title": "新しい予想",
+    "text": "が作れるためにくもの糸を使う発送が浮かべました。"
   },
   {
     "image": "Image Sequence_012_0000.jpg",
     "showText": true,
     "textPosition": "bottom",
-    "title": "Project introduction",
-    "text": "This text appears to the right of the image."
+    "title": "糸は飛び道具として使える。",
+    "text": "プログラミングに色々の検査やバッグ対策が必要でした。特に糸の出し方や一つ一つの部分の繋がり方と切る方法"
   },
   {
     "image": "bungiejump.png",
     "showText": true,
     "textPosition": "bottom",
-    "title": "Project introduction",
-    "text": "This text appears to the right of the image."
+    "title": "（飛んだ最中）",
+    "text": "糸の原点からプレイヤーまでのベクターを取ってジャンプする時糸はばねみたいに引っ張る。"
   },
   {
     "image": "Image Sequence_013_0000.jpg",
     "showText": true,
     "textPosition": "bottom",
-    "title": "Development process",
-    "text": "This text appears to the left of the image.",
+    "title": "登るゲームを逆転したらどうなるのか",
+    "text": "を考えて、抵抗する風は障害物として利用することにした。",
      "zoom": 1.5
   },
   {
     "image": "Image Sequence_018_0000.jpg",
     "showText": true,
     "textPosition": "bottom",
-    "title": "Concept exploration",
-    "text": "This text appears above the image."
+    "title": "（設定のオプションやリセットとやら）スタイル",
+    "text": "仕様書を作って、友達の援助を得たおかげでだんだん私が考えた雰囲気は出しています"
   },
   {
     "image": "Image Sequence_017_0000.jpg",
     "showText": true,
     "textPosition": "bottom",
     "title": "開発中",
-    "text": "This text appears above the image."
+    "text": "いずれパズル要素や糸の使い方を増やしながらちょうどいい長さで仕上げているゲームになるを目指しています。"
   }
 ]
