@@ -34,5 +34,11 @@
     "textPosition": "bottom",
     "title": "Concept exploration",
     "text": "This text appears above the image."
+  } {
+    "image": "Image Sequence_017_0000.jpg",
+    "showText": true,
+    "textPosition": "bottom",
+    "title": "開発中",
+    "text": "This text appears above the image."
   }
 ]
