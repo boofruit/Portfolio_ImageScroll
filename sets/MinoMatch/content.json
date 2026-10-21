@@ -1,42 +1,38 @@
 [
   {
-    "image": "Image Sequence_002_0000.jpg",
+    "image": "スクリーンショット 2026-09-29 133931.png",
     "showText": false
   },
   {
-    "image": "Image Sequence_007_0000.jpg",
+    "image": "スクリーンショット 2026-09-29 135505.png",
     "showText": true,
     "textPosition": "left",
-    "title": "楽しいプラットフォームゲームを目指にして",
-    "text": " 一番頑張った所はやっぱりいい感じになるの動きと当たり判定の書類。"
+    "title": "",
+    "text": ""
   },
   {
-    "image": "Image Sequence_004_0000.jpg",
+    "image": "スクリーンショット 2026-09-29 134006.png",
     "showText": false
   },
   {
-    "image": "Image Sequence_005_0000.jpg",
+    "image": "スクリーンショット 2026-09-29 134120.png",
     "showText": true,
     "textPosition": "right",
-    "title": " (死んで戻った後）     はまるために",
-    "text": "　難度がいる。難しくなるほどそれに伴うやりがいの気持ちが作れ様に集中しています"
+    "title": " ",
+    "text": "　"
   },
   {
-    "image": "Image Sequence_008_0000.jpg",
+    "image": "スクリーンショット 2026-09-29 134351.png",
     "showText": true,
     "textPosition": "left",
-    "title": " 普通プラットフォームに代わって",
-    "text": "　くもで遊ぶんだ。壁に貼って歩いたり、どんな位置からでも登ってや飛べられる。ちゃんと地面についてるかやかべを握ているかの判定上手くやるため、それから欲しい時にかべをにつく事が出来るまだいっぱい検査がかかりました。"
+    "title": "",
+    "text": "　"
   },
   {
-    "image": "Image Sequence_009_0000.jpg",
+    "image": "スクリーンショット 2026-09-29 135258.png",
     "showText": true,
     "textPosition": "right",
     "title": " 物理特徴（強い気流に対してくもは浮いている）",
     "text": "　プレイヤーの向きは入力だけでなく速度や重力を見せています"
-  },
-  {
-    "image": "Image Sequence_010_0000.jpg",
-    "showText": false
   }
 ]
