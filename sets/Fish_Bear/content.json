@@ -1,6 +1,6 @@
 [
   {
-    "image": "スクリーンショット 2026-09-29 133846.png",
+    "image": "FB_Title.png",
     "showText": false
   },
   {
@@ -15,28 +15,17 @@
     "showText": false
   },
   {
-    "image": "Image Sequence_005_0000.jpg",
+    "image": "FB_Controls.png",
     "showText": true,
     "textPosition": "right",
-    "title": " (死んで戻った後）     はまるために",
-    "text": "　難度がいる。難しくなるほどそれに伴うやりがいの気持ちが作れ様に集中しています"
+    "title": " ",
+    "text": "　"
   },
   {
-    "image": "Image Sequence_008_0000.jpg",
+    "image": "企画書.pdf",
     "showText": true,
     "textPosition": "left",
-    "title": " 普通プラットフォームに代わって",
-    "text": "　くもで遊ぶんだ。壁に貼って歩いたり、どんな位置からでも登ってや飛べられる。ちゃんと地面についてるかやかべを握ているかの判定上手くやるため、それから欲しい時にかべをにつく事が出来るまだいっぱい検査がかかりました。"
-  },
-  {
-    "image": "Image Sequence_009_0000.jpg",
-    "showText": true,
-    "textPosition": "right",
-    "title": " 物理特徴（強い気流に対してくもは浮いている）",
-    "text": "　プレイヤーの向きは入力だけでなく速度や重力を見せています"
-  },
-  {
-    "image": "Image Sequence_010_0000.jpg",
-    "showText": false
+    "title": " ",
+    "text": "　"
   }
 ]
