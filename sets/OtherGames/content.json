@@ -1,7 +1,36 @@
 [
   {
+    "image": "slimeTitle.jpg",
+    "showText": true,
+    "textPosition": "bottom",
+    "title": "",
+    "text": " "
+  },
+  {
+    "image": "slime_game1.jpg",
+    "showText": true,
+    "textPosition": "bottom",
+    "title": "",
+    "text": " "
+  },
+
+  {
+    "image": "slime_game2.jpg",
+    "showText": true,
+    "textPosition": "bottom",
+    "title": "",
+    "text": " "
+  },
+  {
+    "image": "slime_game3.jpg",
+    "showText": true,
+    "textPosition": "bottom",
+    "title": "",
+    "text": " "
+  },
+  {
     "image": "Image Sequence_002_0000.jpg",
-   "showText": true,
+    "showText": true,
     "textPosition": "bottom",
     "title": "",
     "text": " "
@@ -22,7 +51,7 @@
   },
   {
     "image": "vlcsnap-2026-10-05-11h53m37s207.png",
-   "showText": true,
+    "showText": true,
     "textPosition": "bottom",
     "title": "",
     "text": " "
