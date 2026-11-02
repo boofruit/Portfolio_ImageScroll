@@ -1,0 +1,30 @@
+[
+  {
+    "image": "slimeTitle.jpg",
+    "showText": true,
+    "textPosition": "bottom",
+    "title": "",
+    "text": " "
+  },
+  {
+    "image": "slime_game1.jpg",
+    "showText": true,
+    "textPosition": "bottom",
+    "title": "",
+    "text": " "
+  },
+  {
+    "image": "slime_game2.jpg",
+    "showText": true,
+    "textPosition": "bottom",
+    "title": "",
+    "text": " "
+  },
+  {
+    "image": "slime_game3.jpg",
+    "showText": true,
+    "textPosition": "bottom",
+    "title": "",
+    "text": " "
+  }
+]
