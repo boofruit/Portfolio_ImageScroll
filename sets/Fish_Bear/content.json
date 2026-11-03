@@ -4,28 +4,28 @@
     "showText": false
   },
   {
-    "image": "スクリーンショット 2026-09-29 133613.png",
+    "image": "スクリーンショット 2026-11-03 143022.png",
     "showText": true,
     "textPosition": "left",
-    "title": "",
-    "text": " "
-  },
-  {
-    "image": "スクリーンショット 2026-09-29 133735.png",
-    "showText": false
+    "title": "飴を挙げるに変わって熊が魚を食べる",
+    "text": " のは自然に浮かびました。でも失敗するそのばいは条件はどうすべきかに悩んでました。"
   },
   {
     "image": "FB_Controls.png",
     "showText": true,
+    "textPosition": "left",
+    "title": "色々の事を試しながら物理的な相互作用に目が引っ張りました。 ",
+    "text": "普通に死ぬより相撲の勝負みたいにどこまで生き残れるのが楽しいそうでした。相手を倒す為に石を投げることにしました。物理的なバランス調整は一番時間かかりました。　"
+  },
+  {
+    "image": "スクリーンショット 2026-09-29 133735.png",
+    "showText": true,
     "textPosition": "right",
-    "title": " ",
-    "text": "　"
+    "title": "仕上げ",
+    "text": "で熊を助けるメカニックやボスキャラを作りました。ちなみに熊の鳴き声は全部私です。"
   },
   {
     "image": "FB企画書.png",
-    "showText": true,
-    "textPosition": "left",
-    "title": " ",
-    "text": "　"
+    "showText": false
   }
 ]
