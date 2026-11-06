@@ -17,11 +17,11 @@
       font-family: Arial, sans-serif;
     }
 
-    .carousel {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 24px;
-    }
+      .carousel {
+          max-width: 900px;
+          margin: 0 auto;
+          padding: 24px 24px 110px; /* extra space at the bottom */
+      }
 
     .project-picker {
       display: block;
@@ -98,20 +98,20 @@
   align-items: center;
 }
 
-.slide-media {
-  height: 520px;
-  min-height: 0;
-  overflow: hidden;
-  background: #e9e9e5;
-}
+      .slide-media {
+          height: min(520px, 70vh); /* was: 520px */
+          min-height: 0;
+          overflow: hidden;
+          background: #e9e9e5;
+      }
 
 .slide-media img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transform-origin: center center;
-  transition: transform 250ms ease;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* was: cover */
+    transform-origin: center center;
+    transition: transform 250ms ease;
 }
 
 .slide-copy {
@@ -159,31 +159,43 @@
     padding: 30px;
   }
 }
-    .controls {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  margin-top: 16px;
-}
+      .controls {
+          position: fixed;
+          left: 0;
+          right: 0;
+          bottom: 16px;
+          margin: 0;
+          padding: 0 16px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          pointer-events: none; /* clicks pass through the empty middle */
+          z-index: 10;
+      }
 
-.controls > button {
-  min-width: 48px;
-  min-height: 48px;
-  border: 0;
-  border-radius: 999px;
-  background: #171717;
-  color: white;
-  cursor: pointer;
-  font-size: 22px;
-}
+          .controls > button {
+              pointer-events: auto; /* but the arrows stay clickable */
+              min-width: 48px;
+              min-height: 48px;
+              border: 0;
+              border-radius: 999px;
+              background: #171717;
+              color: white;
+              cursor: pointer;
+              font-size: 22px;
+          }
 
-.dots {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
+      .dots {
+          position: absolute; /* pinned too, so they don't jump either */
+          left: 50%;
+          bottom: 64px; /* sits just above the "Projects" button */
+          transform: translateX(-50%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          pointer-events: auto;
+      }
 
 .dot {
   width: 9px;
